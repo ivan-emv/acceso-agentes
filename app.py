@@ -43,12 +43,11 @@ with st.sidebar:
             with st.form("Agregar Enlace"):
                 nombre = st.text_input("Nombre del Enlace")
                 url = st.text_input("URL")
-                ano = st.text_input("Año (Opcional, si aplica)")
                 categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos por Agente", "Otros enlaces"])
                 enviar = st.form_submit_button("Guardar Enlace")
                 
                 if enviar:
-                    nuevo_enlace = [ano, nombre, url, categoria]
+                    nuevo_enlace = [nombre, url, categoria]
                     sheet.append_row(nuevo_enlace)
                     st.success("✅ Enlace agregado exitosamente.")
                     st.rerun()
@@ -68,8 +67,7 @@ with col_enlaces:
         url = str(row.get("URL", "")).strip()
         
         if categoria in categorias and nombre and url:
-            texto_boton = nombre if categoria not in ["EMV - SIRE", "Datos por Agente"] else row.get("Año", "")
-            categorias[categoria].append((texto_boton, url))
+            categorias[categoria].append((nombre, url))
     
     col1, col2, col3, col4 = st.columns(4)
     columnas = [col1, col2, col3, col4]
@@ -95,10 +93,8 @@ with col_calculadora:
     
     localizador = st.text_input("Inserte Localizador")
     if st.button("Ver Reserva") and localizador:
-        js = f"window.open('https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}')"
-        st.markdown(f'<script>{js}</script>', unsafe_allow_html=True)
+        st.js("window.open", f"https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}")
     
     tr = st.text_input("Inserte TR")
     if st.button("Ver Traslado") and tr:
-        js = f"window.open('https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}')"
-        st.markdown(f'<script>{js}</script>', unsafe_allow_html=True)
+        st.js("window.open", f"https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}")
