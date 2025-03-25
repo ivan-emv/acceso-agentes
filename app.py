@@ -43,7 +43,7 @@ with st.sidebar:
             with st.form("Agregar Enlace"):
                 nombre = st.text_input("Nombre del Enlace")
                 url = st.text_input("URL")
-                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos Agente", "Otros enlaces"])
+                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos por Agente", "Otros enlaces"])
                 enviar = st.form_submit_button("Guardar Enlace")
                 
                 if enviar:
@@ -58,7 +58,7 @@ col_enlaces, col_calculadora = st.columns([2, 1])
 # 🔗 Sección de accesos rápidos organizados en 4 columnas (Columna central)
 with col_enlaces:
     st.header("🔗 Accesos Rápidos")
-    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos Agente", "Otros enlaces"]
+    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos por Agente", "Otros enlaces"]
     categorias = {cat: [] for cat in categorias_validas}
     
     for _, row in enlaces_df.iterrows():
@@ -93,8 +93,8 @@ with col_calculadora:
     
     localizador = st.text_input("Inserte Localizador")
     if st.button("Ver Reserva") and localizador:
-        st.js("window.open", f"https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}")
+        st.markdown(f'<script>window.open("https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}", "_blank");</script>', unsafe_allow_html=True)
     
     tr = st.text_input("Inserte TR")
     if st.button("Ver Traslado") and tr:
-        st.js("window.open", f"https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}")
+        st.markdown(f'<script>window.open("https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}", "_blank");</script>', unsafe_allow_html=True)
