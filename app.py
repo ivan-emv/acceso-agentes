@@ -51,9 +51,12 @@ with col_enlaces:
     
     for _, row in enlaces_df.iterrows():
         categoria = str(row.get("Categoría", "Otros enlaces")).strip()
-        if categoria in categorias:
-            texto_boton = row["Nombre del Enlace"] if categoria not in ["EMV - SIRE", "Datos por Agente"] else row["Año"]
-            categorias[categoria].append((texto_boton, row["URL"]))
+        nombre = str(row.get("Nombre del Enlace", "")).strip()
+        url = str(row.get("URL", "")).strip()
+        
+        if categoria in categorias and nombre and url:
+            texto_boton = nombre if categoria not in ["EMV - SIRE", "Datos por Agente"] else row.get("Año", "")
+            categorias[categoria].append((texto_boton, url))
     
     col1, col2, col3, col4 = st.columns(4)
     columnas = [col1, col2, col3, col4]
@@ -62,7 +65,8 @@ with col_enlaces:
         with columnas[i]:
             st.subheader(categoria)
             for nombre, url in categorias[categoria]:
-                st.link_button(nombre, url, use_container_width=True)
+                if nombre and url:
+                    st.link_button(nombre, url, use_container_width=True)
 
 # 💰 Calculadora de Reembolsos y botones adicionales (Columna derecha, siempre visible)
 with col_calculadora:
