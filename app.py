@@ -26,15 +26,14 @@ def cargar_enlaces():
 
 enlaces_df = cargar_enlaces()
 
-# 🔐 Modo Administrador con usuario y contraseña en la barra lateral
-USERS = {"ivan.amador": "EMVac1997-"}  # 🔒 Cambia o añade más usuarios aquí
+# 🔐 Modo Administrador con usuario y contraseña en la barra lateral dentro de un panel minimizable
 modo_admin = False
 with st.sidebar:
-    with st.expander("🔧 Modo Administrador", expanded=False):
+    with st.expander("🔧 Administrador", expanded=False):
         if st.checkbox("Activar Modo Administrador"):
             usuario = st.text_input("👤 Usuario")
             password = st.text_input("🔑 Contraseña", type="password")
-            if usuario in USERS and USERS[usuario] == password:
+            if usuario == "ivan.amador" and password == "EMVac1997-":
                 modo_admin = True
                 st.success("🔓 Acceso concedido al modo administrador")
                 
@@ -43,7 +42,7 @@ with st.sidebar:
                 with st.form("Agregar Enlace"):
                     nombre = st.text_input("Nombre del Enlace")
                     url = st.text_input("URL")
-                    categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Happy Faces", "Otros Enlaces"])
+                    categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros enlaces", "Happy Faces"])
                     enviar = st.form_submit_button("Guardar Enlace")
                     
                     if enviar:
@@ -58,10 +57,10 @@ col_enlaces, col_calculadora = st.columns([3, 1])
 # 🔗 Sección de accesos rápidos organizados en 5 columnas alineadas (Columna central)
 with col_enlaces:
     # 📌 Agregar el logo en la parte superior con tamaño reducido
-    st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=500)
+    st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=300)
     
     st.header("🔗 Accesos Rápidos")
-    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Happy Faces", "Otros Enlaces"]
+    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros enlaces", "Happy Faces"]
     categorias = {cat: [] for cat in categorias_validas}
     
     for _, row in enlaces_df.iterrows():
