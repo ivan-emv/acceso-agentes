@@ -1,153 +1,119 @@
+import json
 import streamlit as st
-from docx import Document
-from docx.shared import Pt, RGBColor
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
-from datetime import datetime
-import os
+import pandas as pd
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-def obtener_dia_semana(fecha, idiomas):
-    dias = {
-        "Español": ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
-        "Portugués": ["Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado", "Domingo"],
-        "Inglés": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    }
-    try:
-        fecha_dt = datetime.strptime(fecha, "%d/%m/%Y")
-        dias_traducidos = [dias.get(idioma, dias["Español"])[fecha_dt.weekday()] for idioma in idiomas]
-        return f"{' / '.join(dias_traducidos)} - {fecha}"
-    except ValueError:
-        return "Día inválido"
+# ✅ Configuración de la página
+st.set_page_config(page_title="Centro de Atención al Cliente", layout="wide")
 
-def generar_cartel(ciudad, fecha, actividad, hora_encuentro, punto_encuentro, desayuno, nombre_guia, op1, precio_op1, op2, precio_op2, idiomas):
-    doc_path = "EJEMPLO CARTEL EMV.docx"
-    if not os.path.exists(doc_path):
-        return "Error: No se encuentra el archivo base. Asegúrate de que 'EJEMPLO CARTEL EMV.docx' está en el directorio."
+# 🔧 Ocultar la barra superior y el menú de Streamlit
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# 🔐 Autenticación con Google Sheets desde Streamlit Secrets
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+service_account_info = st.secrets["gcp_service_account"]
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
+
+# 🔹 Autenticación con Google Sheets
+client = gspread.authorize(credentials)
+
+# 📂 Cargar datos desde Google Sheets
+SHEET_ID = "1kBLQAdhYbnP8HTUgpr_rmmGEaOdyMU2tI97ogegrGxY"
+SHEET_NAME = "Enlaces"
+sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
+
+def cargar_enlaces():
+    data = sheet.get_all_records()
+    return pd.DataFrame(data)
+
+enlaces_df = cargar_enlaces()
+
+# 🔐 Modo Administrador con usuario y contraseña en la barra lateral dentro de un panel minimizable
+modo_admin = False
+with st.sidebar:
+    with st.expander("🔧 Administrador", expanded=False):
+        if st.checkbox("Activar Modo Administrador"):
+            usuario = st.text_input("👤 Usuario")
+            password = st.text_input("🔑 Contraseña", type="password")
+            if usuario == "ivan.amador" and password == "EMVac1997-":
+                modo_admin = True
+                st.success("🔓 Acceso concedido al modo administrador")
+                
+                # 🛠️ Panel de carga de enlaces justo debajo de la autenticación
+                st.header("📥 Agregar Enlace")
+                with st.form("Agregar Enlace"):
+                    nombre = st.text_input("Nombre del Enlace")
+                    url = st.text_input("URL")
+                    categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros Enlaces", "Happy Faces"])
+                    enviar = st.form_submit_button("Guardar Enlace")
+                    
+                    if enviar:
+                        nuevo_enlace = [nombre, url, categoria]
+                        sheet.append_row(nuevo_enlace)
+                        st.success("✅ Enlace agregado exitosamente.")
+                        st.rerun()
+
+# 🏗️ Dividir la pantalla en 2 columnas con el 75% para enlaces y 25% para la calculadora
+col_enlaces, col_calculadora = st.columns([3, 1])
+
+# 🔗 Sección de accesos rápidos organizados en 5 columnas alineadas (Columna central)
+with col_enlaces:
+    # 📌 Agregar el logo en la parte superior con tamaño reducido
+    st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=300)
     
-    doc = Document(doc_path)
+    st.header("🔗 Accesos Rápidos")
+    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros Enlaces", "Happy Faces"]
+    categorias = {cat: [] for cat in categorias_validas}
     
-    fecha_formateada = obtener_dia_semana(fecha, idiomas)
-    
-    traducciones = {
-        "Español": {"Bienvenidos": "¡Bienvenidos!", "Guía": "GUÍA", "Opcional": "Paseo opcional", "NoOpcionales": "No hay Excursiones Opcionales para el Día de Hoy", "Actividad": "Actividad", "Desayuno": "Desayuno", "Salida": "Salida", "PuntodeEncuentro": "Punto de Encuentro", "HoradeEncuentro": "Hora de Salida"},
-        "Portugués": {"Bienvenidos": "Bem-Vindos!", "Guía": "GUIA", "Opcional": "Passeio opcional", "NoOpcionales": "Não há passeios opcionais para hoje", "Actividad": "Atividade", "Desayuno": "Café da Manhã", "Salida": "Saída", "PuntodeEncuentro": "Ponto de Encontro", "HoradeEncuentro": "Hora de Saída"},
-        "Inglés": {"Bienvenidos": "Welcome!", "Guía": "GUIDE", "Opcional": "Optional excursion", "NoOpcionales": "There are no optional excursions for today", "Actividad": "Activity", "Desayuno": "Breakfast", "Salida": "Departure", "PuntodeEncuentro": "Meeting Point", "HoradeEncuentro": "Departure Hour"}
-    }
-    
-    textos_traducidos = [traducciones.get(idioma, traducciones["Español"]) for idioma in idiomas]
-    
-    bienvenida = " / ".join([texto['Bienvenidos'] for texto in textos_traducidos])
-    guia_traducido = " / ".join([texto['Guía'] for texto in textos_traducidos])
-    actividad_traducida = " / ".join([texto['Actividad'] for texto in textos_traducidos]) + f":\n - {actividad}"
-    desayuno_traducido = " / ".join([texto['Desayuno'] for texto in textos_traducidos]) + f": {desayuno}"
-    no_opcionales_texto = " / ".join([texto['NoOpcionales'] for texto in textos_traducidos])
-    punto_de_encuentro = " / ".join([texto['PuntodeEncuentro'] for texto in textos_traducidos])
-    hora_de_encuentro = " / ".join([texto['HoradeEncuentro'] for texto in textos_traducidos])
-    
-    reemplazos = {
-        "(BIENVENIDA)": bienvenida,
-        "(CIUDAD)": f"{ciudad}",
-        "📅": f"📅 {fecha_formateada}",
-        "🥐": f"🥐 {desayuno_traducido}\n",
-        "🚌": f"🚌 {actividad_traducida}\n",
-        "⏰": f"⏰ {hora_de_encuentro}: {hora_encuentro}\n",
-        "🧑‍💼": f"🧑‍💼 {guia_traducido}: {nombre_guia}\n",
-        "📍": f"📍 {punto_de_encuentro}: {punto_encuentro}"
-    }
-    
-    for p in doc.paragraphs:
-        for key, value in reemplazos.items():
-            if key in p.text:
-                p.text = p.text.replace(key, value)
-                for run in p.runs:
-                    if key in ["(BIENVENIDA)", "(CIUDAD)"]:
-                        run.font.name = "Arial Black"
-                        run.font.size = Pt(18)
-                        run.font.color.rgb = RGBColor(44, 66, 148)
-                        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    elif key == "📅":
-                        run.font.name = "Arial Black"
-                        run.font.size = Pt(14)
-                        run.font.color.rgb = RGBColor(44, 66, 148)
-                        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    elif key == "🥐":
-                        run.font.name = "Arial Black"
-                        run.font.size = Pt(14)
-                        run.font.color.rgb = RGBColor(44, 66, 148)
-                        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    elif key == "🚌":
-                        run.font.name = "Arial Black"
-                        run.font.size = Pt(14)
-                        run.font.color.rgb = RGBColor(44, 66, 148)
-                        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    elif "⏰" in p.text:
-                        run.font.name = "Arial Black"
-                        run.font.size = Pt(16)
-                        run.font.color.rgb = RGBColor(44, 66, 148)
-                        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-                    else:
-                        run.font.name = "Arial Black"
-                        run.font.size = Pt(14)
-                        run.font.color.rgb = RGBColor(44, 66, 148)
-                        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    for _, row in enlaces_df.iterrows():
+        categoria = str(row.get("Categoría", "Otros enlaces")).strip()
+        nombre = str(row.get("Nombre del Enlace", "")).strip()
+        url = str(row.get("URL", "")).strip()
         
-        if "✨ Paseo opcional / Passeio opcional / Optional excursion" in p.text:
-            if not op1 and not op2:
-                opcional_run = p.add_run(f"\n{no_opcionales_texto}")
-            else:
-                if op1:
-                    opcional_run1 = p.add_run(f"\n{op1} - 💰 {precio_op1}")
-                    opcional_run1.font.name = "Arial"
-                    opcional_run1.font.size = Pt(14)
-                    opcional_run1.font.color.rgb = RGBColor(44, 66, 148)
-                if op2:
-                    opcional_run2 = p.add_run(f"\n{op2} - 💰 {precio_op2}")
-                    opcional_run2.font.name = "Arial"
-                    opcional_run2.font.size = Pt(14)
-                    opcional_run2.font.color.rgb = RGBColor(44, 66, 148)
+        if categoria in categorias and nombre and url:
+            categorias[categoria].append((nombre, url))
     
-    output_path = os.path.join(os.getcwd(), f"Cartel_{ciudad}_{'_'.join(idiomas)}.docx")
-    doc.save(output_path)
-    return output_path
-st.title("Generador de Carteles - Guías")
-
-idiomas_disponibles = ["Español", "Portugués", "Inglés"]
-idiomas_seleccionados = st.multiselect("Seleccione los idiomas:", idiomas_disponibles, default=["Español"])
-
-if len(idiomas_seleccionados) == 0:
-    st.warning("Debe seleccionar al menos un idioma para generar el cartel.")
-else:
-    ciudad = st.text_input("Ingrese la Ciudad:")
-    fecha = st.text_input("Ingrese la fecha (dd/mm/aaaa):")
-    actividad = st.text_input("Ingrese el nombre de la actividad principal:")
-    hora_encuentro = st.text_input("Ingrese la Hora de Salida:")
-    punto_encuentro = st.text_input("Ingrese el Punto de Encuentro:")
-    desayuno = st.text_input("Ingrese la Hora del Desayuno:")
-    nombre_guia = st.text_input("Ingrese el Nombre del Guía:")
-    op1 = st.text_input("Ingrese la Excursión Opcional 1 (Opcional):")
-    precio_op1 = st.text_input("Ingrese el precio de la Excursión Opcional 1 (Opcional):")
-    op2 = st.text_input("Ingrese la Excursión Opcional 2 (Opcional):")
-    precio_op2 = st.text_input("Ingrese el precio de la Excursión Opcional 2 (Opcional):")
+    # Asegurar la alineación de los botones agregando placeholders vacíos
+    max_items = max(len(cat) for cat in categorias.values())
     
-    if st.button("Generar Cartel"):
-        try:
-            # Validación del formato de fecha
-            datetime.strptime(fecha, "%d/%m/%Y")
-            
-            archivo_generado = generar_cartel(
-                ciudad, fecha, actividad, hora_encuentro,
-                punto_encuentro, desayuno, nombre_guia,
-                op1, precio_op1, op2, precio_op2, idiomas_seleccionados
-            )
-            
-            if archivo_generado.startswith("Error"):
-                st.error(archivo_generado)
-            else:
-                with open(archivo_generado, "rb") as file:
-                    st.download_button(
-                        label="Descargar Cartel",
-                        data=file,
-                        file_name=os.path.basename(archivo_generado),
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    )
-        except ValueError:
-            st.error("El formato de la fecha es inválido. Asegúrese de usar el formato dd/mm/aaaa (por ejemplo: 21/03/2025).")
+    col1, col2, col3, col4, col5 = st.columns(5)
+    columnas = [col1, col2, col3, col4, col5]
+    
+    for i, categoria in enumerate(categorias_validas):
+        with columnas[i]:
+            st.markdown(f"<h3 style='text-align: center;'>{categoria}</h3>", unsafe_allow_html=True)
+            enlaces = categorias[categoria]
+            for nombre, url in enlaces:
+                if nombre and url:
+                    st.link_button(nombre, url, use_container_width=True)
+            # Rellenar con espacios en blanco para mantener la alineación
+            for _ in range(max_items - len(enlaces)):
+                st.markdown("&nbsp;")
+
+# 💰 Calculadora de Reembolsos y botones adicionales (Columna derecha, ahora más estrecha)
+with col_calculadora:
+    st.header("💰 Calculadora de Reembolsos")
+    monto = st.number_input("Monto a devolver", min_value=0.0, format="%.2f")
+    porcentaje = st.number_input("% Comisión del proveedor", min_value=0.01, max_value=100.0, format="%.2f")
+    if st.button("Calcular"):
+        total_a_devolver = monto / ((100 - porcentaje) / 100)
+        st.success(f"Total a devolver: ${total_a_devolver:.2f}")
+    
+    st.markdown("---")
+    st.link_button("INFO EMV", "https://esuezhg4oon.typeform.com/InfoCC", use_container_width=True)
+    
+    localizador = st.text_input("Inserte Localizador")
+    if localizador:
+        st.link_button("Ver Reserva", f"https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}", use_container_width=True)
+    
+    tr = st.text_input("Inserte TR")
+    if tr:
+        st.link_button("Ver Traslado", f"https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}", use_container_width=True)
