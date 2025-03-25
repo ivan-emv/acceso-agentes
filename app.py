@@ -92,9 +92,9 @@ with col_calculadora:
     st.link_button("INFO EMV", "https://esuezhg4oon.typeform.com/InfoCC", use_container_width=True)
     
     localizador = st.text_input("Inserte Localizador")
-    if st.button("Ver Reserva") and localizador:
-        st.markdown(f'[Abrir Reserva](https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador})', unsafe_allow_html=True)
+    if localizador:
+        st.link_button("Ver Reserva", f"https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}", use_container_width=True)
     
     tr = st.text_input("Inserte TR")
-    if st.button("Ver Traslado") and tr:
-        st.markdown(f'[Abrir Traslado](https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr})', unsafe_allow_html=True)
+    if tr:
+        st.link_button("Ver Traslado", f"https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}", use_container_width=True)
