@@ -55,7 +55,7 @@ with st.sidebar:
 # 🏗️ Dividir la pantalla en 2 columnas (Enlaces - Calculadora)
 col_enlaces, col_calculadora = st.columns([2, 1])
 
-# 🔗 Sección de accesos rápidos organizados en 5 columnas (Columna central)
+# 🔗 Sección de accesos rápidos organizados en 5 columnas alineadas (Columna central)
 with col_enlaces:
     st.header("🔗 Accesos Rápidos")
     categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos Agente", "Otros enlaces", "Happy Faces"]
@@ -69,15 +69,22 @@ with col_enlaces:
         if categoria in categorias and nombre and url:
             categorias[categoria].append((nombre, url))
     
+    # Asegurar la alineación de los botones agregando placeholders vacíos
+    max_items = max(len(cat) for cat in categorias.values())
+    
     col1, col2, col3, col4, col5 = st.columns(5)
     columnas = [col1, col2, col3, col4, col5]
     
     for i, categoria in enumerate(categorias_validas):
         with columnas[i]:
             st.subheader(categoria)
-            for nombre, url in categorias[categoria]:
+            enlaces = categorias[categoria]
+            for nombre, url in enlaces:
                 if nombre and url:
                     st.link_button(nombre, url, use_container_width=True)
+            # Rellenar con espacios en blanco para mantener la alineación
+            for _ in range(max_items - len(enlaces)):
+                st.markdown("&nbsp;")
 
 # 💰 Calculadora de Reembolsos y botones adicionales (Columna derecha, siempre visible)
 with col_calculadora:
