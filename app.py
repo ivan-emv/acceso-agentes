@@ -43,7 +43,7 @@ with st.sidebar:
             with st.form("Agregar Enlace"):
                 nombre = st.text_input("Nombre del Enlace")
                 url = st.text_input("URL")
-                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Happy Faces", "Otros enlaces"])
+                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Happy Faces", "Datos x Agente", "Otros enlaces"])
                 enviar = st.form_submit_button("Guardar Enlace")
                 
                 if enviar:
@@ -58,7 +58,7 @@ col_enlaces, col_calculadora = st.columns([2, 1])
 # 🔗 Sección de accesos rápidos organizados en 4 columnas (Columna central)
 with col_enlaces:
     st.header("🔗 Accesos Rápidos")
-    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Happy Faces", "Otros enlaces"]
+    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Happy Faces", "Datos x Agente", "Otros enlaces"]
     categorias = {cat: [] for cat in categorias_validas}
     
     for _, row in enlaces_df.iterrows():
@@ -69,8 +69,8 @@ with col_enlaces:
         if categoria in categorias and nombre and url:
             categorias[categoria].append((nombre, url))
     
-    col1, col2, col3, col4 = st.columns(4)
-    columnas = [col1, col2, col3, col4]
+    col1, col2, col3, col4, col5 = st.columns(5)
+    columnas = [col1, col2, col3, col4, col5]
     
     for i, categoria in enumerate(categorias_validas):
         with columnas[i]:
