@@ -7,6 +7,16 @@ from oauth2client.service_account import ServiceAccountCredentials
 # ✅ Configuración de la página
 st.set_page_config(page_title="Centro de Atención al Cliente", layout="wide")
 
+# 🔧 Ocultar la barra superior y el menú de Streamlit
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # 🔐 Autenticación con Google Sheets desde Streamlit Secrets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 service_account_info = st.secrets["gcp_service_account"]
