@@ -30,27 +30,27 @@ enlaces_df = cargar_enlaces()
 USERS = {"ivan.amador": "EMVac1997-"}  # 🔒 Cambia o añade más usuarios aquí
 modo_admin = False
 with st.sidebar:
-    st.header("🔧 Modo Administrador")
-    if st.checkbox("Activar Modo Administrador"):
-        usuario = st.text_input("👤 Usuario")
-        password = st.text_input("🔑 Contraseña", type="password")
-        if usuario in USERS and USERS[usuario] == password:
-            modo_admin = True
-            st.success("🔓 Acceso concedido al modo administrador")
-            
-            # 🛠️ Panel de carga de enlaces justo debajo de la autenticación
-            st.header("📥 Agregar Enlace")
-            with st.form("Agregar Enlace"):
-                nombre = st.text_input("Nombre del Enlace")
-                url = st.text_input("URL")
-                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros enlaces", "Happy Faces"])
-                enviar = st.form_submit_button("Guardar Enlace")
+    with st.expander("🔧 Modo Administrador", expanded=False):
+        if st.checkbox("Activar Modo Administrador"):
+            usuario = st.text_input("👤 Usuario")
+            password = st.text_input("🔑 Contraseña", type="password")
+            if usuario in USERS and USERS[usuario] == password:
+                modo_admin = True
+                st.success("🔓 Acceso concedido al modo administrador")
                 
-                if enviar:
-                    nuevo_enlace = [nombre, url, categoria]
-                    sheet.append_row(nuevo_enlace)
-                    st.success("✅ Enlace agregado exitosamente.")
-                    st.rerun()
+                # 🛠️ Panel de carga de enlaces justo debajo de la autenticación
+                st.header("📥 Agregar Enlace")
+                with st.form("Agregar Enlace"):
+                    nombre = st.text_input("Nombre del Enlace")
+                    url = st.text_input("URL")
+                    categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros enlaces", "Happy Faces"])
+                    enviar = st.form_submit_button("Guardar Enlace")
+                    
+                    if enviar:
+                        nuevo_enlace = [nombre, url, categoria]
+                        sheet.append_row(nuevo_enlace)
+                        st.success("✅ Enlace agregado exitosamente.")
+                        st.rerun()
 
 # 🏗️ Dividir la pantalla en 2 columnas con el 75% para enlaces y 25% para la calculadora
 col_enlaces, col_calculadora = st.columns([3, 1])
@@ -58,7 +58,7 @@ col_enlaces, col_calculadora = st.columns([3, 1])
 # 🔗 Sección de accesos rápidos organizados en 5 columnas alineadas (Columna central)
 with col_enlaces:
     # 📌 Agregar el logo en la parte superior con tamaño reducido
-    st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=500)
+    st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=300)
     
     st.header("🔗 Accesos Rápidos")
     categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros enlaces", "Happy Faces"]
