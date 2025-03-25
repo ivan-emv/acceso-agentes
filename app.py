@@ -52,8 +52,8 @@ with st.sidebar:
                     st.success("✅ Enlace agregado exitosamente.")
                     st.rerun()
 
-# 🏗️ Dividir la pantalla en 2 columnas (Enlaces - Calculadora)
-col_enlaces, col_calculadora = st.columns([2, 1])
+# 🏗️ Dividir la pantalla en 2 columnas con el 75% para enlaces y 25% para la calculadora
+col_enlaces, col_calculadora = st.columns([3, 1])
 
 # 🔗 Sección de accesos rápidos organizados en 5 columnas alineadas (Columna central)
 with col_enlaces:
@@ -86,7 +86,7 @@ with col_enlaces:
             for _ in range(max_items - len(enlaces)):
                 st.markdown("&nbsp;")
 
-# 💰 Calculadora de Reembolsos y botones adicionales (Columna derecha, siempre visible)
+# 💰 Calculadora de Reembolsos y botones adicionales (Columna derecha, ahora más estrecha)
 with col_calculadora:
     st.header("💰 Calculadora de Reembolsos")
     monto = st.number_input("Monto a devolver", min_value=0.0, format="%.2f")
