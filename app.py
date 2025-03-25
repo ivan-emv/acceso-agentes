@@ -31,7 +31,7 @@ monto = st.number_input("Monto a devolver", min_value=0.0, format="%.2f")
 porcentaje = st.number_input("% Comisión del proveedor", min_value=0.01, max_value=100.0, format="%.2f")
 if st.button("Calcular"):
     cuenta1 = 100 / porcentaje  # Factor de ajuste
-    total_a_devolver = monto / cuenta1  # 🔹 Ahora dividimos en lugar de multiplicar
+    total_a_devolver = monto * cuenta1  # ✅ Multiplicamos en lugar de dividir
     
     # 🔎 Depuración: Mostrar valores intermedios
     st.write(f"### 📊 Valores intermedios")
