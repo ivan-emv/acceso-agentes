@@ -52,7 +52,7 @@ with st.sidebar:
                 with st.form("Agregar Enlace"):
                     nombre = st.text_input("Nombre del Enlace")
                     url = st.text_input("URL")
-                    categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros Enlaces", "Happy Faces"])
+                    categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Happy Faces", "Otros Enlaces"])
                     enviar = st.form_submit_button("Guardar Enlace")
                     
                     if enviar:
@@ -70,7 +70,7 @@ with col_enlaces:
     st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=300)
     
     st.header("🔗 Accesos Rápidos")
-    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros Enlaces", "Happy Faces"]
+    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Happy Faces", "Otros Enlaces"]
     categorias = {cat: [] for cat in categorias_validas}
     
     for _, row in enlaces_df.iterrows():
