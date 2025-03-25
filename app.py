@@ -58,7 +58,7 @@ col_enlaces, col_calculadora = st.columns([2, 1])
 # 🔗 Sección de accesos rápidos organizados en 4 columnas (Columna central)
 with col_enlaces:
     st.header("🔗 Accesos Rápidos")
-    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos por Agente", "Otros enlaces"]
+    categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos Agente", "Otros enlaces"]
     categorias = {cat: [] for cat in categorias_validas}
     
     for _, row in enlaces_df.iterrows():
