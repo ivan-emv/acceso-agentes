@@ -1,3 +1,4 @@
+import json
 import streamlit as st
 import pandas as pd
 import gspread
@@ -25,8 +26,16 @@ def cargar_enlaces():
 
 enlaces_df = cargar_enlaces()
 
-# 🎛️ Modo administrador
-modo_admin = st.sidebar.checkbox("Modo Administrador")
+# 🔐 Modo Administrador con autenticación por contraseña
+ADMIN_PASSWORD = "admin123"  # 🔒 Cambia esta clave por una más segura
+modo_admin = False
+if st.sidebar.checkbox("Modo Administrador"):
+    password = st.sidebar.text_input("🔑 Ingresa la contraseña", type="password")
+    if password == ADMIN_PASSWORD:
+        modo_admin = True
+        st.sidebar.success("🔓 Acceso concedido al modo administrador")
+    elif password:
+        st.sidebar.error("❌ Contraseña incorrecta")
 
 # 🏠 Título principal
 st.title("Centro de Atención al Cliente")
