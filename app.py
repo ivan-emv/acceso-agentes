@@ -92,8 +92,7 @@ with col_calculadora:
     st.link_button("INFO EMV", "https://esuezhg4oon.typeform.com/InfoCC", use_container_width=True)
     
     localizador = st.text_input("Inserte Localizador")
-    if st.button("Ver Reserva") and localizador:
-        st.markdown(f'<script>window.open("https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}", "_blank");</script>', unsafe_allow_html=True)
+    if st.link_button("Ver Reserva", "https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}", use_container_width=True)
     
     tr = st.text_input("Inserte TR")
     if st.button("Ver Traslado") and tr:
