@@ -27,7 +27,7 @@ def cargar_enlaces():
 enlaces_df = cargar_enlaces()
 
 # 🔐 Modo Administrador con autenticación por contraseña
-ADMIN_PASSWORD = "admin123"  # 🔒 Cambia esta clave por una más segura
+ADMIN_PASSWORD = "EMVac1997-"  # 🔒 Cambia esta clave por una más segura
 modo_admin = False
 if st.sidebar.checkbox("Modo Administrador"):
     password = st.sidebar.text_input("🔑 Ingresa la contraseña", type="password")
