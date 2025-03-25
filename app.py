@@ -62,7 +62,7 @@ with st.sidebar:
                         st.rerun()
 
 # 🏗️ Dividir la pantalla en 2 columnas con el 75% para enlaces y 25% para la calculadora
-col_enlaces, col_calculadora = st.columns([3, 1])
+col_enlaces, col_calculadora = st.columns([4, 1])
 
 # 🔗 Sección de accesos rápidos organizados en 5 columnas alineadas (Columna central)
 with col_enlaces:
