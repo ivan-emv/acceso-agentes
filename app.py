@@ -1,31 +1,59 @@
 import streamlit as st
 import pandas as pd
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-# ✅ Configuración de la página (debe ir primero)
+# ✅ Configuración de la página
 st.set_page_config(page_title="Centro de Atención al Cliente", layout="wide")
 
-# Cargar datos desde GitHub
-@st.cache_data
-def cargar_datos():
-    url = "https://raw.githubusercontent.com/ivan-emv/acceso-agentes/main/ACCESOS%20AGENTES.xlsx"
-    xls = pd.ExcelFile(url)
-    accesos_df = xls.parse('ACCESOS')
-    return accesos_df
+# 🔐 Autenticación con Google Sheets
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+credentials = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+client = gspread.authorize(credentials)
 
-accesos_df = cargar_datos()
+# 📂 Cargar datos desde Google Sheets
+SHEET_ID = "1kBLQAdhYbnP8HTUgpr_rmmGEaOdyMU2tI97ogegrGxY"
+SHEET_NAME = "Enlaces"
+sheet = client.open_by_key(SHEET_ID).worksheet(SHEET_NAME)
 
-# Título principal
+def cargar_enlaces():
+    data = sheet.get_all_records()
+    return pd.DataFrame(data)
+
+enlaces_df = cargar_enlaces()
+
+# 🎛️ Modo administrador
+modo_admin = st.sidebar.checkbox("Modo Administrador")
+
+# 🏠 Título principal
 st.title("Centro de Atención al Cliente")
 
-# Sección de accesos rápidos
+# 🔗 Sección de accesos rápidos
 st.header("🔗 Accesos Rápidos")
-for _, row in accesos_df.iterrows():
-    if pd.notna(row[0]):
-        st.markdown(f"**{row[0]}**")
-    if pd.notna(row[1]):
-        st.markdown(f"[Acceder]({row[1]})")
 
-# Sección de calculadora de reembolsos
+# 📋 Mostrar enlaces
+for _, row in enlaces_df.iterrows():
+    if pd.notna(row["Nombre del Enlace"]):
+        st.markdown(f"**{row['Nombre del Enlace']}**")
+    if pd.notna(row["URL"]):
+        st.markdown(f"[Acceder]({row['URL']})")
+
+# 🛠️ Modo Administrador: Agregar/Editar Enlaces
+if modo_admin:
+    st.sidebar.header("🔧 Gestión de Enlaces")
+    with st.sidebar.form("Agregar Enlace"):
+        nombre = st.text_input("Nombre del Enlace")
+        url = st.text_input("URL")
+        ano = st.text_input("Año (Opcional, si aplica)")
+        permanente = st.selectbox("¿Permanente?", ["Sí", "No"])
+        enviar = st.form_submit_button("Guardar Enlace")
+        
+        if enviar:
+            nuevo_enlace = [ano, nombre, url, permanente]
+            sheet.append_row(nuevo_enlace)
+            st.success("✅ Enlace agregado exitosamente. Recarga la página para ver los cambios.")
+
+# 💰 Calculadora de Reembolsos
 st.header("💰 Calculadora de Reembolsos")
 monto = st.number_input("Monto a devolver", min_value=0.0, format="%.2f")
 porcentaje = st.number_input("% Comisión del proveedor", min_value=0.01, max_value=100.0, format="%.2f")
