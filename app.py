@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 
+# ✅ Configuración de la página (debe ir primero)
+st.set_page_config(page_title="Centro de Atención al Cliente", layout="wide")
+
 # Cargar datos desde GitHub
 @st.cache_data
 def cargar_datos():
@@ -11,9 +14,6 @@ def cargar_datos():
     return accesos_df, plantillas_df
 
 accesos_df, plantillas_df = cargar_datos()
-
-# Configuración de la página
-st.set_page_config(page_title="Centro de Atención al Cliente", layout="wide")
 
 # Título principal
 st.title("Centro de Atención al Cliente")
