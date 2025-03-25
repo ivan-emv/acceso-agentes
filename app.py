@@ -58,7 +58,7 @@ col_enlaces, col_calculadora = st.columns([3, 1])
 # 🔗 Sección de accesos rápidos organizados en 5 columnas alineadas (Columna central)
 with col_enlaces:
     # 📌 Agregar el logo en la parte superior con tamaño reducido
-    st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=300)
+    st.image("https://github.com/ivan-emv/acceso-agentes/blob/main/a1.png?raw=true", width=500)
     
     st.header("🔗 Accesos Rápidos")
     categorias_validas = ["Sistemas EMV", "EMV - SIRE", "Datos x Agente", "Otros enlaces", "Happy Faces"]
@@ -80,7 +80,7 @@ with col_enlaces:
     
     for i, categoria in enumerate(categorias_validas):
         with columnas[i]:
-            st.subheader(categoria)
+            st.markdown(f"<h3 style='text-align: center;'>{categoria}</h3>", unsafe_allow_html=True)
             enlaces = categorias[categoria]
             for nombre, url in enlaces:
                 if nombre and url:
