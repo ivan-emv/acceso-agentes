@@ -30,6 +30,13 @@ st.header("💰 Calculadora de Reembolsos")
 monto = st.number_input("Monto a devolver", min_value=0.0, format="%.2f")
 porcentaje = st.number_input("% Comisión del proveedor", min_value=0.01, max_value=100.0, format="%.2f")
 if st.button("Calcular"):
-    cuenta1 = porcentaje / 100  # Corrección de la fórmula
-    total_a_devolver = monto / cuenta1  # División en lugar de multiplicación
+    cuenta1 = porcentaje / 100  # Calculamos el porcentaje como decimal
+    total_a_devolver = monto / cuenta1  # Aplicamos la fórmula correcta
+    
+    # 🔎 Depuración: Mostrar valores intermedios
+    st.write(f"### 📊 Valores intermedios")
+    st.write(f"Cuenta1 (Porcentaje en decimal): {cuenta1}")
+    st.write(f"Monto ingresado: {monto}")
+    st.write(f"Total a devolver calculado: {total_a_devolver}")
+    
     st.success(f"Total a devolver: ${total_a_devolver:.2f}")
