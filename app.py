@@ -37,11 +37,24 @@ with st.sidebar:
         if usuario in USERS and USERS[usuario] == password:
             modo_admin = True
             st.success("🔓 Acceso concedido al modo administrador")
-        elif usuario or password:
-            st.error("❌ Usuario o contraseña incorrectos")
+            
+            # 🛠️ Panel de carga de enlaces justo debajo de la autenticación
+            st.header("📥 Agregar Enlace")
+            with st.form("Agregar Enlace"):
+                nombre = st.text_input("Nombre del Enlace")
+                url = st.text_input("URL")
+                ano = st.text_input("Año (Opcional, si aplica)")
+                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos por Agente", "Otros enlaces"])
+                enviar = st.form_submit_button("Guardar Enlace")
+                
+                if enviar:
+                    nuevo_enlace = [ano, nombre, url, categoria]
+                    sheet.append_row(nuevo_enlace)
+                    st.success("✅ Enlace agregado exitosamente.")
+                    st.rerun()
 
-# 🏗️ Dividir la pantalla en 3 columnas (Admin - Enlaces - Calculadora)
-col_admin, col_enlaces, col_calculadora = st.columns([1, 2, 1])
+# 🏗️ Dividir la pantalla en 2 columnas (Enlaces - Calculadora)
+col_enlaces, col_calculadora = st.columns([2, 1])
 
 # 🔗 Sección de accesos rápidos organizados en 4 columnas (Columna central)
 with col_enlaces:
@@ -81,26 +94,11 @@ with col_calculadora:
     st.link_button("INFO EMV", "https://esuezhg4oon.typeform.com/InfoCC", use_container_width=True)
     
     localizador = st.text_input("Inserte Localizador")
-    if st.button("Ver Reserva"):
-        st.markdown(f'<a href="https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}" target="_blank">Abrir Reserva</a>', unsafe_allow_html=True)
+    if st.button("Ver Reserva") and localizador:
+        js = f"window.open('https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}')"
+        st.markdown(f'<script>{js}</script>', unsafe_allow_html=True)
     
     tr = st.text_input("Inserte TR")
-    if st.button("Ver Traslado"):
-        st.markdown(f'<a href="https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}" target="_blank">Abrir Traslado</a>', unsafe_allow_html=True)
-
-# 🛠️ Modo Administrador: Agregar/Editar Enlaces (Columna izquierda)
-if modo_admin:
-    with col_admin:
-        st.header("🔧 Gestión de Enlaces")
-        with st.form("Agregar Enlace"):
-            nombre = st.text_input("Nombre del Enlace")
-            url = st.text_input("URL")
-            ano = st.text_input("Año (Opcional, si aplica)")
-            categoria = st.selectbox("Categoría", categorias_validas)
-            enviar = st.form_submit_button("Guardar Enlace")
-            
-            if enviar:
-                nuevo_enlace = [ano, nombre, url, categoria]
-                sheet.append_row(nuevo_enlace)
-                st.success("✅ Enlace agregado exitosamente.")
-                st.rerun()
+    if st.button("Ver Traslado") and tr:
+        js = f"window.open('https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}')"
+        st.markdown(f'<script>{js}</script>', unsafe_allow_html=True)
