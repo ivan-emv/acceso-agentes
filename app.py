@@ -27,7 +27,7 @@ def cargar_enlaces():
 enlaces_df = cargar_enlaces()
 
 # 🔐 Modo Administrador con usuario y contraseña
-USERS = {"admin": "admin123"}  # 🔒 Cambia o añade más usuarios aquí
+USERS = {"ivan.amador": "EMVac1997-"}  # 🔒 Cambia o añade más usuarios aquí
 modo_admin = False
 if st.sidebar.checkbox("Modo Administrador"):
     usuario = st.sidebar.text_input("👤 Usuario")
