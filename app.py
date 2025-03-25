@@ -62,7 +62,7 @@ with col_enlaces:
         with columnas[i]:
             st.subheader(categoria)
             for nombre, url in categorias[categoria]:
-                st.button(nombre, on_click=lambda url=url: st.markdown(f'<meta http-equiv="refresh" content="0; url={url}">', unsafe_allow_html=True))
+                st.link_button(nombre, url, use_container_width=True)
 
 # 💰 Calculadora de Reembolsos y botones adicionales (Columna derecha, siempre visible)
 with col_calculadora:
@@ -74,15 +74,15 @@ with col_calculadora:
         st.success(f"Total a devolver: ${total_a_devolver:.2f}")
     
     st.markdown("---")
-    st.markdown("### [INFO EMV](https://esuezhg4oon.typeform.com/InfoCC)", unsafe_allow_html=True)
+    st.link_button("INFO EMV", "https://esuezhg4oon.typeform.com/InfoCC", use_container_width=True)
     
     localizador = st.text_input("Inserte Localizador")
     if st.button("Ver Reserva"):
-        st.markdown(f'<meta http-equiv="refresh" content="0; url=https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}">', unsafe_allow_html=True)
+        st.markdown(f'<a href="https://www.europamundo-online.com/reservas/buscarreserva2.asp?coreserva={localizador}" target="_blank">Abrir Reserva</a>', unsafe_allow_html=True)
     
     tr = st.text_input("Inserte TR")
     if st.button("Ver Traslado"):
-        st.markdown(f'<meta http-equiv="refresh" content="0; url=https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}">', unsafe_allow_html=True)
+        st.markdown(f'<a href="https://www.europamundo-online.com/Individuales/ExcursionDetalle.ASP?CORESERVA={tr}" target="_blank">Abrir Traslado</a>', unsafe_allow_html=True)
 
 # 🛠️ Modo Administrador: Agregar/Editar Enlaces (Columna izquierda)
 if modo_admin:
