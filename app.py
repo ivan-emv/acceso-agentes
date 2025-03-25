@@ -82,4 +82,5 @@ if modo_admin:
         if enviar:
             nuevo_enlace = [ano, nombre, url, permanente]
             sheet.append_row(nuevo_enlace)
-            st.success("✅ Enlace agregado exitosamente. Recarga la página para ver los cambios.")
+            st.success("✅ Enlace agregado exitosamente.")
+            st.experimental_rerun()  # 🔄 Actualiza la página automáticamente sin recargar el navegador
