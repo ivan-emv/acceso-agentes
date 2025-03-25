@@ -1,4 +1,3 @@
-import json
 import streamlit as st
 import pandas as pd
 import gspread
@@ -9,7 +8,7 @@ st.set_page_config(page_title="Centro de Atención al Cliente", layout="wide")
 
 # 🔐 Autenticación con Google Sheets desde Streamlit Secrets
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-service_account_info = json.loads(st.secrets["gcp_service_account"])
+service_account_info = st.secrets["gcp_service_account"]  # ✅ Corrección: Accedemos directamente al diccionario
 credentials = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
 
 # 🔹 Autenticación con Google Sheets
