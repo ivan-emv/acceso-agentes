@@ -26,16 +26,18 @@ def cargar_enlaces():
 
 enlaces_df = cargar_enlaces()
 
-# 🔐 Modo Administrador con autenticación por contraseña
-ADMIN_PASSWORD = "EMVac1997-"  # 🔒 Cambia esta clave por una más segura
+# 🔐 Modo Administrador con usuario y contraseña
+USERS = {"admin": "admin123"}  # 🔒 Cambia o añade más usuarios aquí
 modo_admin = False
 if st.sidebar.checkbox("Modo Administrador"):
-    password = st.sidebar.text_input("🔑 Ingresa la contraseña", type="password")
-    if password == ADMIN_PASSWORD:
+    usuario = st.sidebar.text_input("👤 Usuario")
+    password = st.sidebar.text_input("🔑 Contraseña", type="password")
+    
+    if usuario in USERS and USERS[usuario] == password:
         modo_admin = True
         st.sidebar.success("🔓 Acceso concedido al modo administrador")
-    elif password:
-        st.sidebar.error("❌ Contraseña incorrecta")
+    elif usuario or password:
+        st.sidebar.error("❌ Usuario o contraseña incorrectos")
 
 # 🏠 Título principal
 st.title("Centro de Atención al Cliente")
