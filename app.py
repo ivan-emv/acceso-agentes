@@ -27,7 +27,7 @@ def cargar_enlaces():
 enlaces_df = cargar_enlaces()
 
 # 🔐 Modo Administrador con usuario y contraseña
-USERS = {"ivan.amador": "EMVac1997-"}  # 🔒 Cambia o añade más usuarios aquí
+USERS = {"admin": "admin123"}  # 🔒 Cambia o añade más usuarios aquí
 modo_admin = False
 if st.sidebar.checkbox("Modo Administrador"):
     usuario = st.sidebar.text_input("👤 Usuario")
@@ -42,15 +42,32 @@ if st.sidebar.checkbox("Modo Administrador"):
 # 🏠 Título principal
 st.title("Centro de Atención al Cliente")
 
-# 🔗 Sección de accesos rápidos
-st.header("🔗 Accesos Rápidos")
+# 🏗️ Dividir la pantalla en 2 columnas
+col1, col2 = st.columns([2, 1])
 
-# 📋 Mostrar enlaces
-for _, row in enlaces_df.iterrows():
-    if pd.notna(row["Nombre del Enlace"]):
-        st.markdown(f"**{row['Nombre del Enlace']}**")
-    if pd.notna(row["URL"]):
-        st.markdown(f"[Acceder]({row['URL']})")
+# 🔗 Sección de accesos rápidos (Columna izquierda)
+with col1:
+    st.header("🔗 Accesos Rápidos")
+    for _, row in enlaces_df.iterrows():
+        if pd.notna(row["Nombre del Enlace"]) and pd.notna(row["URL"]):
+            st.button(row["Nombre del Enlace"], on_click=lambda url=row["URL"]: st.markdown(f'<meta http-equiv="refresh" content="0; url={url}">', unsafe_allow_html=True))
+
+# 💰 Calculadora de Reembolsos (Columna derecha, siempre visible)
+with col2:
+    st.header("💰 Calculadora de Reembolsos")
+    monto = st.number_input("Monto a devolver", min_value=0.0, format="%.2f")
+    porcentaje = st.number_input("% Comisión del proveedor", min_value=0.01, max_value=100.0, format="%.2f")
+    if st.button("Calcular"):
+        cuenta1 = (100 - porcentaje) / 100  # Factor de ajuste
+        total_a_devolver = monto / cuenta1  # ✅ Multiplicamos en lugar de dividir
+        
+        # 🔎 Depuración: Mostrar valores intermedios
+        st.write(f"### 📊 Valores intermedios")
+        st.write(f"Cuenta1 (Factor de ajuste): {cuenta1}")
+        st.write(f"Monto ingresado: {monto}")
+        st.write(f"Total a devolver calculado: {total_a_devolver}")
+        
+        st.success(f"Total a devolver: ${total_a_devolver:.2f}")
 
 # 🛠️ Modo Administrador: Agregar/Editar Enlaces
 if modo_admin:
@@ -66,19 +83,3 @@ if modo_admin:
             nuevo_enlace = [ano, nombre, url, permanente]
             sheet.append_row(nuevo_enlace)
             st.success("✅ Enlace agregado exitosamente. Recarga la página para ver los cambios.")
-
-# 💰 Calculadora de Reembolsos
-st.header("💰 Calculadora de Reembolsos")
-monto = st.number_input("Monto a devolver", min_value=0.0, format="%.2f")
-porcentaje = st.number_input("% Comisión del proveedor", min_value=0.01, max_value=100.0, format="%.2f")
-if st.button("Calcular"):
-    cuenta1 = (100 - porcentaje) / 100  # Factor de ajuste
-    total_a_devolver = monto / cuenta1  # ✅ Multiplicamos en lugar de dividir
-    
-    # 🔎 Depuración: Mostrar valores intermedios
-    st.write(f"### 📊 Valores intermedios")
-    st.write(f"Cuenta1 (Factor de ajuste): {cuenta1}")
-    st.write(f"Monto ingresado: {monto}")
-    st.write(f"Total a devolver calculado: {total_a_devolver}")
-    
-    st.success(f"Total a devolver: ${total_a_devolver:.2f}")
