@@ -43,7 +43,7 @@ with st.sidebar:
             with st.form("Agregar Enlace"):
                 nombre = st.text_input("Nombre del Enlace")
                 url = st.text_input("URL")
-                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos por Agente", "Otros enlaces"])
+                categoria = st.selectbox("Categoría", ["Sistemas EMV", "EMV - SIRE", "Datos Agente", "Otros enlaces"])
                 enviar = st.form_submit_button("Guardar Enlace")
                 
                 if enviar:
